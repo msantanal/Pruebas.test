@@ -1,0 +1,9 @@
+terraform {
+  required_version = ">= 0.14"
+  backend "azurerm" {
+    resource_group_name  = "${{RESOURCE_GROUP}}"
+    storage_account_name = "${{STORAGE_ACCOUNT}}"
+    container_name       = "tfstate"
+    key                  = "${{TFSTATE_FILE}}"
+  }
+}

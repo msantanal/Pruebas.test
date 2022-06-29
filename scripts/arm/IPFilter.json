@@ -1,0 +1,43 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "eventhubNamespaceName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of the Event Hubs namespace"
+        }
+      },
+      "ips": {
+        "type": "string",              
+        "metadata": {
+          "description": "IP list to filter"
+        }
+      }
+    },
+    "variables": {
+      "namespaceNetworkRuleSetName": "[concat(parameters('eventhubNamespaceName'), concat('/', 'default'))]",
+      "IpsArray": "[split(parameters('ips'),',')]"
+    },
+    "resources": [
+      {
+        "apiVersion": "2018-01-01-preview",
+        "name": "[variables('namespaceNetworkRuleSetName')]",
+        "type": "Microsoft.EventHub/namespaces/networkruleset",
+        "properties": {
+          "virtualNetworkRules" : [],
+          "copy": [
+            {
+              "name": "ipRules",
+              "count": "[length(variables('IpsArray'))]",
+              "input": {
+                "ipMask": "[variables('IpsArray')[copyIndex('ipRules')]]",
+                "action":"Allow"
+              } 
+            }],          
+          "defaultAction": "Deny"
+        }
+      }
+    ],
+    "outputs": { }
+  }
